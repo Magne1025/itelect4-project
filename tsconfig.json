@@ -1,24 +1,7 @@
 {
-  "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "./dist",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "target": "ES2022",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "types": ["node"],
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "strict": true,
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
-    "esModuleInterop": true,
-    "skipLibCheck": true
-  },
-  "include": ["src/**/*", "types/**/*"]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
 }

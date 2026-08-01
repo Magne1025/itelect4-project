@@ -1,22 +1,27 @@
 {
   "name": "itelect4-gt1",
+  "private": true,
   "version": "1.0.0",
-  "description": "Campus Lost & Found — ITELECT4 GT1 Part 1 (TypeScript foundations)",
-  "main": "src/index.ts",
-  "scripts": {
-    "start": "tsx src/index.ts",
-    "typecheck": "tsc --noEmit",
-    "dev": "vite",
-    "build": "tsc && vite build"
-  },
-  "keywords": ["typescript", "lost-and-found", "itelect4"],
-  "author": "",
-  "license": "ISC",
   "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "oxlint": "^1.75.0",
     "tsx": "^4.19.0",
-    "typescript": "^5.8.0",
-    "vite": "^6.0.0"
+    "typescript": "~6.0.2",
+    "vite": "^8.2.0"
   }
 }
