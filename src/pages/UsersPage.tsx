@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { useDataStore } from "../data/data";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToggle } from "../hooks/index";
 import { UserCard } from "../components/UserCard";
+import { getUsers, updateUserActiveStatus } from "../api/client";
 
 /**
  * Users management page — lists all users with toggle active/inactive.
@@ -9,14 +9,29 @@ import { UserCard } from "../components/UserCard";
  * Route: /users
  */
 export function UsersPage() {
-  const { users, loading, loadDatabase, toggleUserActive } = useDataStore();
+  const queryClient = useQueryClient();
   const [showOnlyActive, toggleShowOnlyActive] = useToggle(false);
 
-  useEffect(() => {
-    if (users.length === 0 && loading) {
-      loadDatabase();
+  const { data: users = [], isLoading: loading } = useQuery({
+    queryKey: ["users"],
+    queryFn: getUsers,
+  });
+
+  const toggleMutation = useMutation({
+    mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) =>
+      updateUserActiveStatus(id, isActive),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
+
+  const toggleUserActive = (userId: string | number) => {
+    const id = Number(userId);
+    const user = users.find((u) => u.id === id);
+    if (user) {
+      toggleMutation.mutate({ id, isActive: !user.isActive });
     }
-  }, [users.length, loading, loadDatabase]);
+  };
 
   const filteredUsers = users.filter((u) => !showOnlyActive || u.isActive);
 

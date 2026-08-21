@@ -1,0 +1,102 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Ana Reyes",
+      "email": "ana@campus.edu",
+      "role": "finder",
+      "isActive": true
+    },
+    {
+      "id": "2",
+      "name": "Ben Cruz",
+      "email": "ben@campus.edu",
+      "role": "claimer",
+      "isActive": true
+    },
+    {
+      "id": "3",
+      "name": "Admin Lee",
+      "email": "admin@campus.edu",
+      "role": "admin",
+      "isActive": true
+    }
+  ],
+  "items": [
+    {
+      "id": "101",
+      "title": "Blue Tumbler",
+      "description": "Insulated Hydro Flask tumbler found near the library entrance. Seems almost new.",
+      "category": "Accessories",
+      "location": "Main Library, 2F",
+      "status": "open",
+      "imageUrl": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?q=80&w=600&auto=format&fit=crop",
+      "reportedById": 1,
+      "createdAt": "2026-07-10T00:00:00.000Z"
+    },
+    {
+      "id": "102",
+      "title": "ID Lace",
+      "description": "Black lace with school logo, no ID card attached. Found it on the bench.",
+      "category": "IDs & Documents",
+      "location": "Engineering Building lobby",
+      "status": "claimed",
+      "imageUrl": "https://images.unsplash.com/photo-1598284534731-50e50e93deae?q=80&w=600&auto=format&fit=crop",
+      "reportedById": 1,
+      "createdAt": "2026-07-12T00:00:00.000Z"
+    },
+    {
+      "id": "103",
+      "title": "MacBook Pro Charger",
+      "description": "White Apple charger left plugged in at a table near the window.",
+      "category": "Electronics",
+      "location": "Student Cafeteria",
+      "status": "open",
+      "imageUrl": "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?q=80&w=600&auto=format&fit=crop",
+      "reportedById": 1,
+      "createdAt": "2026-07-15T00:00:00.000Z"
+    },
+    {
+      "title": "pppl",
+      "description": "ppp",
+      "category": "Accessories",
+      "location": "kkk",
+      "status": "open",
+      "reportedById": 1,
+      "createdAt": "2026-08-21T14:01:32.948Z",
+      "id": "EGu2llsf1Uw"
+    },
+    {
+      "title": "hays",
+      "description": "asd",
+      "category": "Clothing",
+      "location": "dss",
+      "status": "claimed",
+      "reportedById": 1,
+      "createdAt": "2026-08-21T14:02:35.258Z",
+      "id": "6TUbtTJXP1g"
+    }
+  ],
+  "claims": [
+    {
+      "id": "501",
+      "itemId": 102,
+      "claimerId": 2,
+      "message": "I lost my lace after PE class.",
+      "contactNumber": "09123456789",
+      "status": "rejected",
+      "createdAt": "2026-07-13T00:00:00.000Z",
+      "reviewedAt": "2026-08-21T14:04:16.761Z"
+    },
+    {
+      "itemId": "6TUbtTJXP1g",
+      "claimerId": 2,
+      "message": "aawwa",
+      "contactNumber": "090348343",
+      "status": "approved",
+      "id": "YZyqFQ6XYIA",
+      "reviewedAt": "2026-08-21T14:05:49.064Z"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

@@ -1,6 +1,7 @@
-import { useEffect } from "react";
-import { useDataStore } from "../data/data";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SubmissionBadge } from "../components/SubmissionBadge";
+import { getClaims, getItems, getUsers, updateClaimStatus } from "../api/client";
+import { ClaimStatus } from "../types/index";
 
 /**
  * Claims management page — lists all submitted claims with approve/reject.
@@ -8,14 +9,26 @@ import { SubmissionBadge } from "../components/SubmissionBadge";
  * Route: /claims
  */
 export function ClaimsPage() {
-  const { claims, items, users, loading, loadDatabase, approveClaim, rejectClaim } =
-    useDataStore();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (items.length === 0 && loading) {
-      loadDatabase();
-    }
-  }, [items.length, loading, loadDatabase]);
+  const { data: claims = [], isLoading: claimsLoading } = useQuery({ queryKey: ["claims"], queryFn: getClaims });
+  const { data: items = [], isLoading: itemsLoading } = useQuery({ queryKey: ["items"], queryFn: getItems });
+  const { data: users = [], isLoading: usersLoading } = useQuery({ queryKey: ["users"], queryFn: getUsers });
+
+  const loading = claimsLoading || itemsLoading || usersLoading;
+
+  const approveMutation = useMutation({
+    mutationFn: (id: number) => updateClaimStatus(id, ClaimStatus.Approved, new Date().toISOString()),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["claims"] }),
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: (id: number) => updateClaimStatus(id, ClaimStatus.Rejected, new Date().toISOString()),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["claims"] }),
+  });
+
+  const approveClaim = (id: string | number) => approveMutation.mutate(Number(id));
+  const rejectClaim = (id: string | number) => rejectMutation.mutate(Number(id));
 
   if (loading) {
     return (

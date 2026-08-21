@@ -24,7 +24,7 @@ export enum ItemStatus {
 // ===== CORE INTERFACES (Part 1 — Lost & Found) =====
 /** App user — role field powers auth. */
 export interface User {
-  id: number;
+  id: string | number;
   name: string;
   email: string;
   role: UserRole;
@@ -33,25 +33,37 @@ export interface User {
 
 /** Lost or found item — list screen entity. */
 export interface Item {
-  id: number;
+  id: string | number;
   title: string;
   description: string;
+  category: string;
   location: string;
   status: ItemStatus;
-  reportedById: number;
+  imageUrl?: string;
+  reportedById: string | number;
   createdAt: Date;
 }
 
 /** Claim on an item — detail nested under Item (list → detail). */
 export interface Claim {
-  id: number;
-  itemId: number;
-  claimerId: number;
+  id: string | number;
+  itemId: string | number;
+  claimerId: string | number;
   message: string;
+  contactNumber: string;
   status: ClaimStatus;
   createdAt: Date;
   reviewedAt?: Date;
 }
+
+export type ApiItem = Omit<Item, "createdAt"> & { createdAt: string };
+export type ApiClaim = Omit<Claim, "createdAt" | "reviewedAt"> & { 
+  createdAt: string; 
+  reviewedAt?: string 
+};
+export type CreateClaimInput = Omit<ApiClaim, "id">;
+export type CreateItemInput = Omit<ApiItem, "id">;
+
 
 // ===== GENERIC API RESPONSE =====
 export interface ApiResponse<T> {
@@ -74,8 +86,8 @@ export type ClaimPreview = Pick<Claim, "id" | "itemId" | "status" | "createdAt">
 export type ClaimStatusLabels = Record<ClaimStatus, string>;
 
 // ===== GENERIC FUNCTIONS =====
-export function getById<T extends { id: number }>(items: T[], id: number): T | undefined {
-  return items.find((item) => item.id === id);
+export function getById<T extends { id: string | number }>(items: T[], id: string | number): T | undefined {
+  return items.find((item) => item.id === id || String(item.id) === String(id));
 }
 
 export function getFirst<T>(items: T[]): T | undefined {

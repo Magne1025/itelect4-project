@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useDataStore } from "../data/data";
+import { useQuery } from "@tanstack/react-query";
 import { ItemStatus } from "../types/index";
-import { CourseCard } from "../components/CourseCard";
+import { ItemCard } from "../components/ItemCard";
+import { getItems } from "../api/client";
+import { useUiStore } from "../store/uiStore";
 
 /**
  * Items catalog page — search, filter, and browse all reported items.
@@ -11,18 +13,15 @@ import { CourseCard } from "../components/CourseCard";
  * Uses useNavigate() inside an event handler to satisfy GT2 requirement.
  */
 export function ItemsPage() {
-  const { items, loading, loadDatabase } = useDataStore();
+  const { data: items = [], isLoading: loading } = useQuery({
+    queryKey: ["items"],
+    queryFn: getItems,
+  });
+  
   const navigate = useNavigate();
 
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<"all" | ItemStatus>("all");
+  const { itemsSearchTerm: searchTerm, setItemsSearchTerm: setSearchTerm, itemsStatusFilter: statusFilter, setItemsStatusFilter: setStatusFilter } = useUiStore();
   const searchInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (items.length === 0 && loading) {
-      loadDatabase();
-    }
-  }, [items.length, loading, loadDatabase]);
 
   // Autofocus search on load
   useEffect(() => {
@@ -44,7 +43,7 @@ export function ItemsPage() {
    * Programmatic navigation via useNavigate() — called from an event handler.
    * Satisfies the GT2 requirement for useNavigate() in an event handler.
    */
-  const handleViewDetails = (itemId: number): void => {
+  const handleViewDetails = (itemId: string | number): void => {
     navigate(`/items/${itemId}`);
   };
 
@@ -62,13 +61,21 @@ export function ItemsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-extrabold font-heading text-slate-900 dark:text-white">
-          Reported Items
-        </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Browse and search all cataloged lost &amp; found items across campus.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-extrabold font-heading text-slate-900 dark:text-white">
+            Reported Items
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Browse and search all cataloged lost &amp; found items across campus.
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/items/new")}
+          className="shrink-0 px-5 py-2.5 text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center gap-2"
+        >
+          <span>➕</span> Report Found Item
+        </button>
       </div>
 
       {/* Search & Filter Bar */}
@@ -137,8 +144,8 @@ export function ItemsPage() {
       {/* Items Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredItems.map((item) => (
-          <div key={item.id} className="flex flex-col">
-            <CourseCard
+          <div key={item.id} className="flex flex-col h-full">
+            <ItemCard
               item={item}
               onClaim={handleViewDetails}
               variant="default"
@@ -146,9 +153,9 @@ export function ItemsPage() {
             {/* View Details button — useNavigate() in an event handler */}
             <button
               onClick={() => handleViewDetails(item.id)}
-              className="mt-3 w-full py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all active:scale-[0.98]"
+              className="mt-3 w-full py-2.5 text-sm font-semibold rounded-xl border-2 border-purple-100 dark:border-purple-500/20 text-purple-700 dark:text-purple-400 bg-purple-50/50 dark:bg-purple-500/10 hover:bg-purple-100 dark:hover:bg-purple-500/20 transition-all active:scale-[0.98]"
             >
-              View Details →
+              View Full Details →
             </button>
           </div>
         ))}

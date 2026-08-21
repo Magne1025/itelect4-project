@@ -8,6 +8,7 @@ import { ClaimsPage } from "./pages/ClaimsPage";
 import { UsersPage } from "./pages/UsersPage";
 import { LoginPage } from "./pages/LoginPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { ReportItemPage } from "./pages/ReportItemPage";
 
 /**
  * App — route table only (all UI logic lives in pages).
@@ -23,6 +24,7 @@ function App() {
         {/* Public routes */}
         <Route index element={<DashboardPage />} />
         <Route path="items" element={<ItemsPage />} />
+        <Route path="items/new" element={<ReportItemPage />} />
         <Route path="items/:itemId" element={<ItemDetailPage />} />
 
         {/* Protected routes — require auth token */}

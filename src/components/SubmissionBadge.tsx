@@ -1,13 +1,13 @@
 import React from "react";
 import { ClaimStatus } from "../types/index";
-import type { Claim } from "../types/index";
+import type { ApiClaim } from "../types/index";
 
 export interface SubmissionBadgeProps {
-  claim: Claim;
+  claim: ApiClaim;
   itemName: string;
   claimerName: string;
-  onApprove: (claimId: number) => void;
-  onReject: (claimId: number) => void;
+  onApprove: (claimId: string | number) => void;
+  onReject: (claimId: string | number) => void;
   variant?: "default" | "compact";
 }
 
@@ -69,6 +69,9 @@ export const SubmissionBadge: React.FC<SubmissionBadgeProps> = ({
           <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/20 space-y-1.5 text-xs text-slate-500 dark:text-slate-450">
             <p>
               <strong>Submitted by:</strong> {claimerName}
+            </p>
+            <p>
+              <strong>Contact:</strong> {claim.contactNumber || "N/A"}
             </p>
             <p>
               <strong>Date:</strong> {new Date(claim.createdAt).toLocaleDateString()}

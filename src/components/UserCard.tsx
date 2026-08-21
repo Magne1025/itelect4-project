@@ -4,7 +4,7 @@ import type { User } from "../types/index";
 
 export interface UserCardProps {
   user: User;
-  onToggleActive: (userId: number) => void;
+  onToggleActive: (userId: string | number) => void;
   variant?: "default" | "compact";
 }
 

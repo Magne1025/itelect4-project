@@ -1,22 +1,25 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useDataStore } from "../data/data";
+import { useQuery } from "@tanstack/react-query";
 import { ItemStatus, ClaimStatus } from "../types/index";
+import { getUsers, getItems, getClaims } from "../api/client";
 
 /**
  * Dashboard — overview page with summary stats and quick-action cards.
  * Route: /
  */
 export function DashboardPage() {
-  const { users, items, claims, loading, error, loadDatabase, setError } =
-    useDataStore();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (users.length === 0 && items.length === 0 && loading) {
-      loadDatabase();
-    }
-  }, [users.length, items.length, loading, loadDatabase]);
+  const usersQuery = useQuery({ queryKey: ["users"], queryFn: getUsers });
+  const itemsQuery = useQuery({ queryKey: ["items"], queryFn: getItems });
+  const claimsQuery = useQuery({ queryKey: ["claims"], queryFn: getClaims });
+
+  const loading = usersQuery.isLoading || itemsQuery.isLoading || claimsQuery.isLoading;
+  const error = usersQuery.error || itemsQuery.error || claimsQuery.error;
+
+  const users = usersQuery.data || [];
+  const items = itemsQuery.data || [];
+  const claims = claimsQuery.data || [];
 
   // Stats
   const totalItems = items.length;
@@ -54,17 +57,15 @@ export function DashboardPage() {
           System Error
         </h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 bg-red-500/5 border border-red-500/10 rounded-xl p-4 font-mono mb-6 text-left break-words w-full">
-          {error}
+          {error instanceof Error ? error.message : "Unknown error"}
         </p>
         <div className="flex gap-4">
           <button
-            onClick={() => setError(null)}
-            className="px-5 py-2.5 text-sm font-semibold rounded-xl text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-          >
-            Dismiss
-          </button>
-          <button
-            onClick={loadDatabase}
+            onClick={() => {
+              usersQuery.refetch();
+              itemsQuery.refetch();
+              claimsQuery.refetch();
+            }}
             className="px-5 py-2.5 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 shadow-md transition-all active:scale-95"
           >
             Retry Connection
@@ -112,7 +113,7 @@ export function DashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
       {/* Hero */}
-      <div className="text-center space-y-3">
+      <div className="text-center space-y-4">
         <h1 className="text-4xl md:text-5xl font-extrabold font-heading text-slate-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-purple-400 dark:to-pink-500">
           Campus Lost &amp; Found
         </h1>
@@ -120,6 +121,20 @@ export function DashboardPage() {
           Interactive dashboard for student claims, cataloged listings, and
           active roles.
         </p>
+        <div className="pt-2 flex justify-center gap-4">
+          <button
+            onClick={() => navigate("/items/new")}
+            className="px-6 py-3 text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center gap-2"
+          >
+            <span>➕</span> Report Found Item
+          </button>
+          <button
+            onClick={() => navigate("/items")}
+            className="px-6 py-3 text-sm font-bold rounded-xl text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-750 shadow-sm transition-all active:scale-95"
+          >
+            Browse Items
+          </button>
+        </div>
       </div>
 
       {/* Stats Grid */}
