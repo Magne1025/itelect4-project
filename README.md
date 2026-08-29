@@ -1,50 +1,61 @@
-# Campus Lost & Found — ITELECT4 GT1
+# Campus Lost & Found — ITELECT4
 
-A campus Lost & Found app: finders post items, claimers submit claims, and admins review them. This GT1 deliverable covers TypeScript foundations (interfaces, generics, utility types, enums).
+A modern React web application for a campus Lost & Found system where finders post items, claimers submit claims, and admins review them.
 
-## Core entities
+## Tech Stack
 
-| Entity | Notes |
-|--------|--------|
-| **User** | Roles: `finder` / `claimer` / `admin` |
-| **Item** | List entity; status: `open` → `claimed` → `closed` |
-| **Claim** | Detail under an item; status: `pending` → `approved` → `completed` |
+This project is built using:
+- **React** (via Vite)
+- **TypeScript**
+- **Tailwind CSS**
+- **Shadcn UI** (Accessible components like Button, Input, Label, etc.)
+- **React Hook Form** + **Zod** (For robust, type-safe form validation)
+- **TanStack Query** (For data fetching and state management)
 
-## How to use
+## Getting Started
+
+First, ensure you have the dependencies installed:
 
 ```bash
 npm install
-npm start
 ```
 
-Then use the menu:
-
-| Key | Action |
-|-----|--------|
-| `1` | List all items |
-| `2` | View item detail |
-| `3` | List users |
-| `4` | List all claims |
-| `5` | Submit a claim |
-| `6` | Approve a claim |
-| `7` | Reject a claim |
-| `8` | Complete a claim |
-| `q` | Quit |
-
-Typecheck (GT1 requirement):
+Start the development server:
 
 ```bash
-npx tsc --noEmit
+npm run dev
 ```
 
-## GT1 Part 1 checklist
+Build for production:
 
-- Interfaces in `types/index.ts` (`User`, `Item`, `Claim`)
-- Generic `ApiResponse<T>`
-- Generic helpers: `getById`, `getFirst`
-- Utility types: `Partial`, `Pick`, `Omit`, `Record`, `ReturnType`
-- Enums: `UserRole`, `ClaimStatus`, `ItemStatus`
+```bash
+npm run build
+```
 
-## Tag
+## Features
 
-Submission tag: `gt1`
+- **Item Reporting**: Report a found item with a type-safe form validated by Zod.
+- **Form Validation**: Submissions are strictly validated to prevent invalid data. Certain sensitive categories require highly descriptive inputs.
+- **Modern UI**: Clean and responsive design using Tailwind CSS and glassmorphism.
+- **State Management**: TanStack Query ensures data is properly cached, synchronized, and updated upon successful mutations.
+
+## Form Validation Rules
+
+When reporting a new found item, the following rules apply:
+- **Title**: Required, 3–100 characters.
+- **Description**: Required, at least 20 characters.
+- **Location**: Required, at least 3 characters.
+- **Category**: Must be a valid predefined category.
+- **IDs & Documents (Refinement)**: If the item is an ID or Document, the description must be at least 50 characters to ensure the owner can be correctly verified.
+
+## TypeScript Requirements
+
+This project also focuses on strict TypeScript enforcement:
+- Interfaces (`User`, `Item`, `Claim`)
+- Derived form types (`z.infer`)
+- Enums (`UserRole`, `ClaimStatus`, `ItemStatus`)
+- Zero TypeScript errors on build
+
+```bash
+npx tsc -b
+```
