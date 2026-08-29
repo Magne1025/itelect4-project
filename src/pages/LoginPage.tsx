@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuthStore } from "../store/authStore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 /**
  * Login page — simple form that calls authStore.login(token).
@@ -64,13 +67,13 @@ export function LoginPage() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <label
+              <Label
                 htmlFor="login-email"
                 className="text-sm font-semibold text-slate-700 dark:text-slate-300"
               >
                 Email
-              </label>
-              <input
+              </Label>
+              <Input
                 id="login-email"
                 type="email"
                 placeholder="admin@campus.edu"
@@ -81,13 +84,13 @@ export function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label
+              <Label
                 htmlFor="login-password"
                 className="text-sm font-semibold text-slate-700 dark:text-slate-300"
               >
                 Password
-              </label>
-              <input
+              </Label>
+              <Input
                 id="login-password"
                 type="password"
                 placeholder="Enter any password"
@@ -97,12 +100,12 @@ export function LoginPage() {
               />
             </div>
 
-            <button
+            <Button
               type="submit"
-              className="w-full py-3 text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 transition-all active:scale-[0.98]"
+              className="w-full py-3 h-auto text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 transition-all active:scale-[0.98] border-none"
             >
               Sign In
-            </button>
+            </Button>
           </form>
 
           <p className="text-center text-xs text-slate-400 dark:text-slate-500">
