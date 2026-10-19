@@ -1,61 +1,75 @@
-# Campus Lost & Found — ITELECT4
+# Campus Lost & Found — Frontend (ITELECT4)
 
-A modern React web application for a campus Lost & Found system where finders post items, claimers submit claims, and admins review them.
+A responsive, professional React and TypeScript web application for a University Lost & Found Campus Information System. Finders post cataloged items, owners submit verification claims, and administrators review submissions and users.
 
-## Tech Stack
+## 🚀 Live Deployments
 
-This project is built using:
-- **React** (via Vite)
-- **TypeScript**
-- **Tailwind CSS**
-- **Shadcn UI** (Accessible components like Button, Input, Label, etc.)
-- **React Hook Form** + **Zod** (For robust, type-safe form validation)
-- **TanStack Query** (For data fetching and state management)
+- **Live Frontend Web App (Vercel):** [https://itelect4-project-green.vercel.app](https://itelect4-project-green.vercel.app)
+- **Live Backend API (Vercel):** [https://itelect4-backend-amber.vercel.app](https://itelect4-backend-amber.vercel.app)
+- **GitHub Repository (Frontend):** [https://github.com/Magne1025/itelect4-project](https://github.com/Magne1025/itelect4-project)
+- **GitHub Repository (Backend):** [https://github.com/Magne1025/itelect4-backend](https://github.com/Magne1025/itelect4-backend)
 
-## Getting Started
+---
 
-First, ensure you have the dependencies installed:
+## 🛠️ Tech Stack & Libraries
 
+- **Framework & Tooling:** React 19, Vite, TypeScript
+- **Styling & UI:** Tailwind CSS, Shadcn UI, Glassmorphism design system
+- **State & Data Management:** TanStack Query (React Query v5), Zustand with persistent store
+- **Form Validation:** React Hook Form, Zod schema validation
+- **Routing:** React Router v7 with route protection
+
+---
+
+## 🔑 Demo Admin Credentials
+
+For reviewing and administrative testing:
+- **Email:** `admin@campus.edu`
+- **Password:** `adminpassword123`
+- **Role:** `admin`
+
+---
+
+## 🌟 Key Features
+
+- **Campus Feed & Catalog:** Browse, search by keyword/location, and filter by status and category.
+- **Report Item Flow:** Multi-field form including title, category, location, Philippine contact number regex validation, detailed description, and image upload.
+- **Ownership Claims:** Submit ownership verification details for reviewed item return.
+- **Admin Dashboard:** Real-time statistics, pending claims management, and user active status controls.
+- **Persistent State & Token Auth:** Secure JWT bearer token integration with automatic session caching in Zustand.
+
+---
+
+## ⚙️ Environment Variables
+
+Create `.env` at the project root:
+
+```env
+VITE_API_URL=https://itelect4-backend-amber.vercel.app
+```
+
+*(For local testing with local backend, use `VITE_API_URL=http://localhost:4000`)*
+
+---
+
+## 🏃 Local Development
+
+Install dependencies:
 ```bash
 npm install
 ```
 
-Start the development server:
-
+Start the Vite development server:
 ```bash
 npm run dev
 ```
 
-Build for production:
-
-```bash
-npm run build
-```
-
-## Features
-
-- **Item Reporting**: Report a found item with a type-safe form validated by Zod.
-- **Form Validation**: Submissions are strictly validated to prevent invalid data. Certain sensitive categories require highly descriptive inputs.
-- **Modern UI**: Clean and responsive design using Tailwind CSS and glassmorphism.
-- **State Management**: TanStack Query ensures data is properly cached, synchronized, and updated upon successful mutations.
-
-## Form Validation Rules
-
-When reporting a new found item, the following rules apply:
-- **Title**: Required, 3–100 characters.
-- **Description**: Required, at least 20 characters.
-- **Location**: Required, at least 3 characters.
-- **Category**: Must be a valid predefined category.
-- **IDs & Documents (Refinement)**: If the item is an ID or Document, the description must be at least 50 characters to ensure the owner can be correctly verified.
-
-## TypeScript Requirements
-
-This project also focuses on strict TypeScript enforcement:
-- Interfaces (`User`, `Item`, `Claim`)
-- Derived form types (`z.infer`)
-- Enums (`UserRole`, `ClaimStatus`, `ItemStatus`)
-- Zero TypeScript errors on build
-
+Run TypeScript compiler check:
 ```bash
 npx tsc -b
+```
+
+Build for production:
+```bash
+npm run build
 ```
