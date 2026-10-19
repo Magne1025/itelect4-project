@@ -42,6 +42,13 @@ export const reportItemSchema = z
       .string()
       .min(3, "Location must be at least 3 characters (e.g. 'Library 2F')."),
 
+    contactNumber: z
+      .string()
+      .regex(
+        /^(09|\+639)\d{9}$/,
+        "Contact number must be a valid 11-digit Philippine mobile number (e.g., 09123456789 or +639123456789)."
+      ),
+
     category: z.enum(ITEM_CATEGORIES, {
       error: "Please select a valid category.",
     }),

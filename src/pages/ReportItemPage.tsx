@@ -28,6 +28,7 @@ export function ReportItemPage() {
       title: "",
       description: "",
       location: "",
+      contactNumber: "",
       category: "Other",
     },
   });
@@ -41,10 +42,29 @@ export function ReportItemPage() {
     },
   });
 
+  // Map display category to backend enum
+  const mapCategory = (cat: string) => {
+    switch (cat) {
+      case "Electronics":
+        return "electronics";
+      case "IDs & Documents":
+        return "documents";
+      case "Accessories":
+        return "accessories";
+      case "Clothing":
+        return "clothing";
+      case "Keys":
+        return "keys";
+      default:
+        return "other";
+    }
+  };
+
   // Called only when Zod validation passes — invalid forms never reach here.
   const onSubmit = (values: ReportItemFormValues) => {
     mutation.mutate({
       ...values,
+      category: mapCategory(values.category),
       imageUrl: imageUrl || undefined,
     });
   };
@@ -144,6 +164,26 @@ export function ReportItemPage() {
               {errors.location && (
                 <p className="text-xs font-medium text-red-500 dark:text-red-400 mt-1">
                   {errors.location.message}
+                </p>
+              )}
+            </div>
+
+            {/* ── Contact Number ─────────────────────────────────── */}
+            <div className="space-y-2">
+              <Label htmlFor="contactNumber" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                Contact Number (Philippine Mobile)
+              </Label>
+              <Input
+                id="contactNumber"
+                type="tel"
+                placeholder="09123456789 or +639123456789"
+                aria-invalid={errors.contactNumber ? true : undefined}
+                className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                {...register("contactNumber")}
+              />
+              {errors.contactNumber && (
+                <p className="text-xs font-medium text-red-500 dark:text-red-400 mt-1">
+                  {errors.contactNumber.message}
                 </p>
               )}
             </div>
