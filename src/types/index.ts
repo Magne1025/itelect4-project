@@ -21,8 +21,7 @@ export enum ItemStatus {
   Closed = "closed",
 }
 
-// ===== CORE INTERFACES (Part 1 — Lost & Found) =====
-/** App user — role field powers auth. */
+// ===== CORE INTERFACES =====
 export interface User {
   id: string | number;
   name: string;
@@ -31,20 +30,20 @@ export interface User {
   isActive: boolean;
 }
 
-/** Lost or found item — list screen entity. */
 export interface Item {
   id: string | number;
+  reporterId: string | number;
   title: string;
   description: string;
   category: string;
   location: string;
+  contactNumber?: string;
   status: ItemStatus;
+  reward?: number;
   imageUrl?: string;
-  reportedById: string | number;
   createdAt: Date;
 }
 
-/** Claim on an item — detail nested under Item (list → detail). */
 export interface Claim {
   id: string | number;
   itemId: string | number;
@@ -56,14 +55,47 @@ export interface Claim {
   reviewedAt?: Date;
 }
 
-export type ApiItem = Omit<Item, "createdAt"> & { createdAt: string };
-export type ApiClaim = Omit<Claim, "createdAt" | "reviewedAt"> & { 
-  createdAt: string; 
-  reviewedAt?: string 
-};
-export type CreateClaimInput = Omit<ApiClaim, "id">;
-export type CreateItemInput = Omit<ApiItem, "id">;
+// Reference resource: Category
+export interface Category {
+  code: string;
+  name: string;
+  description: string;
+}
 
+// ===== DERIVED TYPES FOR API (matching MongoDB backend) =====
+export type ApiItem = Omit<Item, "id" | "reporterId" | "createdAt"> & {
+  id: string;
+  reporterId: string;
+  createdAt?: string;
+  reportedAt?: string;
+};
+
+// What we send when creating an item: server sets reporterId from token
+export type NewItem = Pick<
+  Item,
+  "title" | "category" | "location" | "description"
+> & {
+  contactNumber?: string;
+  status?: string;
+  reward?: number;
+};
+
+export type ApiClaim = Omit<Claim, "createdAt" | "reviewedAt"> & {
+  createdAt: string;
+  reviewedAt?: string;
+};
+
+export type CreateClaimInput = Omit<ApiClaim, "id">;
+export type CreateItemInput = NewItem & { imageUrl?: string; reportedById?: string | number };
+
+export type ApiUser = Omit<User, "id"> & {
+  id: string;
+};
+
+export interface AuthReply {
+  token: string;
+  user: ApiUser;
+}
 
 // ===== GENERIC API RESPONSE =====
 export interface ApiResponse<T> {
@@ -72,17 +104,10 @@ export interface ApiResponse<T> {
   message: string;
 }
 
-// ===== UTILITY TYPE USES (at least two) =====
-/** Partial update payload for an item (PATCH). */
+// ===== UTILITY TYPE USES =====
 export type UpdateItemInput = Partial<Pick<Item, "title" | "description" | "location" | "status">>;
-
-/** Public profile — hide email from list views. */
 export type PublicUser = Omit<User, "email">;
-
-/** Claim card preview — only fields shown in a list row. */
 export type ClaimPreview = Pick<Claim, "id" | "itemId" | "status" | "createdAt">;
-
-/** Lookup table: claim status → label. */
 export type ClaimStatusLabels = Record<ClaimStatus, string>;
 
 // ===== GENERIC FUNCTIONS =====
@@ -94,7 +119,6 @@ export function getFirst<T>(items: T[]): T | undefined {
   return items[0];
 }
 
-/** Helper whose return type is reused via ReturnType. */
 export function createClaimPreview(claim: Claim): ClaimPreview {
   return {
     id: claim.id,

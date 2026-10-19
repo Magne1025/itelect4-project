@@ -27,7 +27,7 @@ export function UsersPage() {
 
   const toggleUserActive = (userId: string | number) => {
     const id = Number(userId);
-    const user = users.find((u) => u.id === id);
+    const user = users.find((u) => String(u.id) === String(userId));
     if (user) {
       toggleMutation.mutate({ id, isActive: !user.isActive });
     }

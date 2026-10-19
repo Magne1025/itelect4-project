@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, Outlet } from "react-router";
 import { useAuthStore } from "../store/authStore";
+import { UserRole } from "../types/index";
 import "../App.css";
 
 /**
@@ -8,7 +9,8 @@ import "../App.css";
  * Persists dark mode preference and provides login/logout via authStore.
  */
 export function Layout() {
-  const { token, logout } = useAuthStore();
+  const { token, user, logout } = useAuthStore();
+  const isAdmin = user?.role === UserRole.Admin;
 
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
@@ -45,7 +47,7 @@ export function Layout() {
       <nav className="sticky top-0 z-40 w-full backdrop-blur-xl bg-white/70 dark:bg-[#0e0d12]/80 border-b border-slate-200/50 dark:border-white/[0.05]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
           {/* Brand */}
-          <NavLink to="/" className="flex items-center gap-2.5 group">
+          <NavLink to={isAdmin ? "/" : "/items"} className="flex items-center gap-2.5 group">
             <span className="text-2xl group-hover:scale-110 transition-transform duration-200">
               🏫
             </span>
@@ -56,18 +58,24 @@ export function Layout() {
 
           {/* Nav Links */}
           <div className="hidden md:flex items-center gap-1">
-            <NavLink to="/" end className={navLinkClass}>
-              Dashboard
-            </NavLink>
+            {isAdmin && (
+              <NavLink to="/" end className={navLinkClass}>
+                Dashboard
+              </NavLink>
+            )}
             <NavLink to="/items" className={navLinkClass}>
               Items
             </NavLink>
-            <NavLink to="/claims" className={navLinkClass}>
-              Claims
-            </NavLink>
-            <NavLink to="/users" className={navLinkClass}>
-              Users
-            </NavLink>
+            {isAdmin && (
+              <>
+                <NavLink to="/claims" className={navLinkClass}>
+                  Claims
+                </NavLink>
+                <NavLink to="/users" className={navLinkClass}>
+                  Users
+                </NavLink>
+              </>
+            )}
           </div>
 
           {/* Right Controls */}
@@ -81,39 +89,53 @@ export function Layout() {
               {darkMode ? "☀️" : "🌙"}
             </button>
 
-            {/* Auth Button */}
+            {/* Auth Buttons */}
             {token ? (
               <button
                 onClick={logout}
                 className="px-4 py-2 text-sm font-semibold rounded-xl border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-all active:scale-95"
               >
-                Logout
+                Logout ({user?.name || "User"})
               </button>
             ) : (
-              <NavLink
-                to="/login"
-                className="px-4 py-2 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-md transition-all active:scale-95"
-              >
-                Login
-              </NavLink>
+              <div className="flex items-center gap-2">
+                <NavLink
+                  to="/login"
+                  className={navLinkClass}
+                >
+                  Login
+                </NavLink>
+                <NavLink
+                  to="/register"
+                  className="px-4 py-2 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-md transition-all active:scale-95"
+                >
+                  Register
+                </NavLink>
+              </div>
             )}
           </div>
         </div>
 
         {/* Mobile Nav (always visible on small screens) */}
         <div className="md:hidden border-t border-slate-200/50 dark:border-white/[0.05] px-4 py-2 flex items-center gap-1 overflow-x-auto">
-          <NavLink to="/" end className={navLinkClass}>
-            Dashboard
-          </NavLink>
+          {isAdmin && (
+            <NavLink to="/" end className={navLinkClass}>
+              Dashboard
+            </NavLink>
+          )}
           <NavLink to="/items" className={navLinkClass}>
             Items
           </NavLink>
-          <NavLink to="/claims" className={navLinkClass}>
-            Claims
-          </NavLink>
-          <NavLink to="/users" className={navLinkClass}>
-            Users
-          </NavLink>
+          {isAdmin && (
+            <>
+              <NavLink to="/claims" className={navLinkClass}>
+                Claims
+              </NavLink>
+              <NavLink to="/users" className={navLinkClass}>
+                Users
+              </NavLink>
+            </>
+          )}
         </div>
       </nav>
 

@@ -1,9 +1,8 @@
 import { useNavigate } from "react-router";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createItem, getUsers } from "../api/client";
-import { ItemStatus, UserRole } from "../types/index";
+import { createItem } from "../api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,10 +16,6 @@ export function ReportItemPage() {
 
   // Image preview is kept in local state (not part of Zod form — it's optional UI only)
   const [imageUrl, setImageUrl] = useState("");
-  const [reportedById, setReportedById] = useState<number>(1);
-
-  const { data: users = [] } = useQuery({ queryKey: ["users"], queryFn: getUsers });
-  const finders = users.filter((u) => u.isActive && u.role !== UserRole.Admin);
 
   // ── react-hook-form setup ─────────────────────────────────────────────────
   const {
@@ -49,14 +44,8 @@ export function ReportItemPage() {
   // Called only when Zod validation passes — invalid forms never reach here.
   const onSubmit = (values: ReportItemFormValues) => {
     mutation.mutate({
-      title: values.title,
-      description: values.description,
-      category: values.category,
-      location: values.location,
+      ...values,
       imageUrl: imageUrl || undefined,
-      status: ItemStatus.Open,
-      reportedById,
-      createdAt: new Date().toISOString(),
     });
   };
 
@@ -198,25 +187,6 @@ export function ReportItemPage() {
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* ── Reporter (mock user selector) ─────────────────── */}
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="reportedBy" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                Reported By (Mock User)
-              </Label>
-              <select
-                id="reportedBy"
-                value={reportedById}
-                onChange={(e) => setReportedById(Number(e.target.value))}
-                className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-              >
-                {finders.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.name} ({u.role})
-                  </option>
-                ))}
-              </select>
             </div>
           </div>
 

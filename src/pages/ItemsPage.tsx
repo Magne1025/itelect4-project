@@ -13,7 +13,7 @@ import { useUiStore } from "../store/uiStore";
  * Uses useNavigate() inside an event handler to satisfy GT2 requirement.
  */
 export function ItemsPage() {
-  const { data: items = [], isLoading: loading } = useQuery({
+  const { data: items = [], isLoading: loading, isError, error } = useQuery({
     queryKey: ["items"],
     queryFn: getItems,
   });
@@ -53,6 +53,17 @@ export function ItemsPage() {
         <div className="relative w-16 h-16">
           <div className="absolute inset-0 rounded-full border-4 border-purple-500/20"></div>
           <div className="absolute inset-0 rounded-full border-4 border-t-purple-600 animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="rounded-2xl bg-red-50 dark:bg-red-950/30 p-6 border border-red-200 dark:border-red-900/30 text-red-700 dark:text-red-400">
+          <p className="font-semibold text-lg mb-1">Failed to load items</p>
+          <p className="text-sm">{(error as Error)?.message} -- tried {import.meta.env.VITE_API_URL}/api/items</p>
         </div>
       </div>
     );

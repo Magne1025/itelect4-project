@@ -82,7 +82,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
           {!isCompact && (
             <div className="flex items-center gap-1.5">
               <span>📅</span>
-              <span><strong>Reported:</strong> {new Date(item.createdAt).toLocaleDateString()}</span>
+              <span><strong>Reported:</strong> {new Date(item.createdAt || item.reportedAt || Date.now()).toLocaleDateString()}</span>
             </div>
           )}
         </div>

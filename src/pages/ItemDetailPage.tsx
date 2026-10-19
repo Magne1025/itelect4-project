@@ -73,7 +73,7 @@ export function ItemDetailPage() {
     );
   }
 
-  const reporter = users.find((u) => u.id === item.reportedById);
+  const reporter = users.find((u) => String(u.id) === String(item.reporterId || ""));
   const itemClaims = claims.filter((c) => c.itemId === item.id);
 
   const getStatusColor = (status: ItemStatus) => {
@@ -187,7 +187,7 @@ export function ItemDetailPage() {
               </h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
                 <span>👤</span>{" "}
-                {reporter ? reporter.name : `User #${item.reportedById}`}
+                {reporter ? reporter.name : "Reporter"}
               </p>
             </div>
 
@@ -197,7 +197,7 @@ export function ItemDetailPage() {
               </h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
                 <span>📅</span>{" "}
-                {new Date(item.createdAt).toLocaleDateString("en-US", {
+                {new Date(item.createdAt || item.reportedAt || Date.now()).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",

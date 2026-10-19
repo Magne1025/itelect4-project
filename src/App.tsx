@@ -7,8 +7,10 @@ import { ItemDetailPage } from "./pages/ItemDetailPage";
 import { ClaimsPage } from "./pages/ClaimsPage";
 import { UsersPage } from "./pages/UsersPage";
 import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ReportItemPage } from "./pages/ReportItemPage";
+import { UserRole } from "./types/index";
 
 /**
  * App — route table only (all UI logic lives in pages).
@@ -16,24 +18,25 @@ import { ReportItemPage } from "./pages/ReportItemPage";
 function App() {
   return (
     <Routes>
-      {/* Public login route (no layout nav) */}
-      <Route path="/login" element={<LoginPage />} />
-
-      {/* All other routes share the Layout (nav + footer) */}
       <Route element={<Layout />}>
-        {/* Public routes */}
         <Route index element={<DashboardPage />} />
         <Route path="items" element={<ItemsPage />} />
-        <Route path="items/new" element={<ReportItemPage />} />
         <Route path="items/:itemId" element={<ItemDetailPage />} />
+        <Route path="login" element={<LoginPage />} />
+        {/* Public, like login: you cannot be logged in yet. */}
+        <Route path="register" element={<RegisterPage />} />
 
-        {/* Protected routes — require auth token */}
+        {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
+          <Route path="items/new" element={<ReportItemPage />} />
+        </Route>
+
+        <Route element={<ProtectedRoute allowedRoles={[UserRole.Admin]} />}>
           <Route path="claims" element={<ClaimsPage />} />
           <Route path="users" element={<UsersPage />} />
         </Route>
 
-        {/* Catch-all — no URL gives a blank page */}
+        {/* Catch-all */}
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
