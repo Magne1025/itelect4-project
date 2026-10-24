@@ -14,11 +14,10 @@ import useAuthStore from "../store/authStore";
 // Normalize API_URL: strip any trailing slash or accidental /api suffix, fallback to production backend if not set
 const rawApiUrl = (import.meta.env.VITE_API_URL || "https://itelect4-backend-amber.vercel.app")
   .trim()
-  .replace(/\/+$/, "");
+  .replace(/\/+$/, "")
+  .replace(/\/api$/i, "");
 
-export const API_URL = rawApiUrl.endsWith("/api")
-  ? rawApiUrl.slice(0, -4)
-  : rawApiUrl;
+export const API_URL = rawApiUrl;
 
 async function request<T>(
   path: string,
@@ -26,8 +25,9 @@ async function request<T>(
 ): Promise<T> {
   const token = useAuthStore.getState().token;
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  const targetUrl = `${API_URL}${cleanPath}`.replace(/\/api\/api\//g, "/api/");
 
-  const res = await fetch(`${API_URL}${cleanPath}`, {
+  const res = await fetch(targetUrl, {
     ...init,
     headers: {
       "Content-Type": "application/json",

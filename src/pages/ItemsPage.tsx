@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ItemStatus } from "../types/index";
 import { ItemCard } from "../components/ItemCard";
-import { getItems } from "../api/client";
+import { getItems, API_URL } from "../api/client";
 import { useUiStore } from "../store/uiStore";
 
 /**
@@ -63,7 +63,7 @@ export function ItemsPage() {
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="rounded-2xl bg-red-50 dark:bg-red-950/30 p-6 border border-red-200 dark:border-red-900/30 text-red-700 dark:text-red-400">
           <p className="font-semibold text-lg mb-1">Failed to load items</p>
-          <p className="text-sm">{(error as Error)?.message} -- tried {import.meta.env.VITE_API_URL}/api/items</p>
+          <p className="text-sm">{(error as Error)?.message} -- tried {API_URL}/api/items</p>
         </div>
       </div>
     );
