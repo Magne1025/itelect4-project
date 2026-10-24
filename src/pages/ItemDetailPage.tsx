@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ItemStatus, ClaimStatus } from "../types/index";
-import { UserRole } from "../types/index";
 import { getItem, getUsers, getClaims, createClaim, updateItemStatus } from "../api/client";
+import { useAuthStore } from "../store/authStore";
 
 /**
  * Item detail page — shows full info for a single item, plus a claim form.
@@ -19,6 +19,7 @@ export function ItemDetailPage() {
   // If itemId is a valid number, parse it. Otherwise, keep it as a string.
   const id = itemId && !isNaN(Number(itemId)) ? Number(itemId) : (itemId as string);
 
+  const { user: currentUser } = useAuthStore();
   const { data: item, isLoading: itemLoading } = useQuery({ queryKey: ["item", id], queryFn: () => getItem(id) });
   const { data: users = [], isLoading: usersLoading } = useQuery({ queryKey: ["users"], queryFn: getUsers });
   const { data: claims = [], isLoading: claimsLoading } = useQuery({ queryKey: ["claims"], queryFn: getClaims });
@@ -37,7 +38,7 @@ export function ItemDetailPage() {
 
   const [claimMessage, setClaimMessage] = useState<string>("");
   const [claimContact, setClaimContact] = useState<string>("");
-  const [claimClaimerId, setClaimClaimerId] = useState<number>(2);
+  const [localClaim, setLocalClaim] = useState<any | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
   if (loading) {
@@ -50,8 +51,6 @@ export function ItemDetailPage() {
       </div>
     );
   }
-
-
 
   if (!item) {
     return (
@@ -74,15 +73,20 @@ export function ItemDetailPage() {
   }
 
   const reporter = users.find((u) => String(u.id) === String(item.reporterId || ""));
-  const itemClaims = claims.filter((c) => c.itemId === item.id);
+  const itemClaims = [...claims.filter((c) => c.itemId === item.id), ...(localClaim ? [localClaim] : [])];
 
-  const getStatusColor = (status: ItemStatus) => {
-    switch (status) {
-      case ItemStatus.Open:
+  const getStatusColor = (status: string) => {
+    switch (String(status).toLowerCase()) {
+      case "found":
+      case "open":
         return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20";
-      case ItemStatus.Claimed:
+      case "lost":
+        return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20";
+      case "claimed":
         return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20";
-      case ItemStatus.Closed:
+      case "closed":
+        return "bg-slate-500/10 text-slate-500 dark:text-slate-400 border-slate-500/20";
+      default:
         return "bg-slate-500/10 text-slate-500 dark:text-slate-400 border-slate-500/20";
     }
   };
@@ -91,15 +95,21 @@ export function ItemDetailPage() {
     e.preventDefault();
     if (!claimMessage.trim() || !item) return;
 
-    claimMutation.mutate({
+    const claimData = {
+      id: String(Date.now()),
       itemId: item.id,
-      claimerId: claimClaimerId,
+      claimerId: currentUser?.id || "student",
+      claimerName: currentUser?.name || "Student User",
       message: claimMessage,
       contactNumber: claimContact,
       status: ClaimStatus.Pending,
-    });
-    statusMutation.mutate(ItemStatus.Claimed);
-    
+      createdAt: new Date().toISOString(),
+    };
+
+    claimMutation.mutate(claimData);
+    statusMutation.mutate("claimed" as any);
+    setLocalClaim(claimData);
+
     setClaimMessage("");
     setClaimContact("");
     setNotification("Claim submitted successfully!");
@@ -255,81 +265,91 @@ export function ItemDetailPage() {
       )}
 
       {/* Claim Form */}
-      {item.status === ItemStatus.Open && (
+      {String(item.status).toLowerCase() !== "claimed" ? (
         <section className="glass-panel rounded-3xl p-6 md:p-8 border-l-4 border-l-purple-500/80">
-          <h2 className="text-xl font-bold font-heading text-slate-900 dark:text-white mb-6">
+          <h2 className="text-xl font-bold font-heading text-slate-900 dark:text-white mb-2">
             Submit a Claim
           </h2>
-          <form onSubmit={handleSubmitClaim} className="space-y-6">
-            <div className="space-y-2">
-              <label
-                htmlFor="detail-claimer"
-                className="text-sm font-semibold text-slate-700 dark:text-slate-300"
-              >
-                Claimer
-              </label>
-              <select
-                id="detail-claimer"
-                value={claimClaimerId}
-                onChange={(e) => setClaimClaimerId(Number(e.target.value))}
-                className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/60"
-              >
-                {users
-                  .filter((u) => u.isActive && u.role !== UserRole.Admin)
-                  .map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.name} ({user.role})
-                    </option>
-                  ))}
-              </select>
-            </div>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+            Believe this item is yours? Fill out the details below to verify ownership.
+          </p>
 
-            <div className="space-y-2">
-              <label
-                htmlFor="detail-message"
-                className="text-sm font-semibold text-slate-700 dark:text-slate-300"
-              >
-                Verification Message
-              </label>
-              <textarea
-                id="detail-message"
-                rows={3}
-                placeholder="Describe unique features to verify ownership…"
-                value={claimMessage}
-                onChange={(e) => setClaimMessage(e.target.value)}
-                required
-                className="w-full px-4 py-3 text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/60"
-              />
-            </div>
+          {currentUser ? (
+            <form onSubmit={handleSubmitClaim} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  Claiming As
+                </label>
+                <div className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-slate-900/60 text-slate-800 dark:text-slate-200 text-sm font-medium">
+                  👤 {currentUser.name} ({currentUser.email})
+                </div>
+              </div>
 
-            <div className="space-y-2">
-              <label
-                htmlFor="detail-contact"
-                className="text-sm font-semibold text-slate-700 dark:text-slate-300"
-              >
-                Contact Number
-              </label>
-              <input
-                id="detail-contact"
-                type="text"
-                placeholder="e.g. 0912 345 6789"
-                value={claimContact}
-                onChange={(e) => setClaimContact(e.target.value)}
-                required
-                className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/60"
-              />
-            </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="detail-message"
+                  className="text-sm font-semibold text-slate-700 dark:text-slate-300"
+                >
+                  Verification Message
+                </label>
+                <textarea
+                  id="detail-message"
+                  rows={3}
+                  placeholder="Describe unique features, markings, serial numbers, or contents to prove ownership…"
+                  value={claimMessage}
+                  onChange={(e) => setClaimMessage(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/60"
+                />
+              </div>
 
-            <div className="flex justify-end">
+              <div className="space-y-2">
+                <label
+                  htmlFor="detail-contact"
+                  className="text-sm font-semibold text-slate-700 dark:text-slate-300"
+                >
+                  Contact Number
+                </label>
+                <input
+                  id="detail-contact"
+                  type="text"
+                  placeholder="e.g. 0917 123 4567"
+                  value={claimContact}
+                  onChange={(e) => setClaimContact(e.target.value)}
+                  required
+                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/60"
+                />
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={claimMutation.isPending}
+                  className="px-6 py-2.5 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50"
+                >
+                  {claimMutation.isPending ? "Submitting…" : "Submit Claim Request"}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="p-6 rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/50 dark:border-purple-800/30 text-center space-y-3">
+              <p className="text-sm text-slate-600 dark:text-slate-300">
+                You must be logged in to file an ownership claim for this item.
+              </p>
               <button
-                type="submit"
-                className="px-6 py-2.5 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-md hover:shadow-lg transition-all active:scale-95"
+                type="button"
+                onClick={() => navigate("/login")}
+                className="px-5 py-2 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-md transition-all active:scale-95"
               >
-                Submit Claim Request
+                Log In to Claim
               </button>
             </div>
-          </form>
+          )}
         </section>
+      ) : (
+        <div className="glass-panel rounded-3xl p-6 text-center text-slate-500 dark:text-slate-400 text-sm">
+          🔒 This item has already been claimed or returned.
+        </div>
       )}
     </div>
   );
