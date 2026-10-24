@@ -65,6 +65,7 @@ export function ReportItemPage() {
     mutation.mutate({
       ...values,
       category: mapCategory(values.category),
+      status: "found",
       imageUrl: imageUrl || undefined,
     });
   };
