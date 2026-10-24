@@ -37,6 +37,7 @@ For reviewing and administrative testing:
 - **Ownership Claims:** Submit ownership verification details for reviewed item return.
 - **Admin Dashboard:** Real-time statistics, pending claims management, and user active status controls.
 - **Persistent State & Token Auth:** Secure JWT bearer token integration with automatic session caching in Zustand.
+- **AI Project & Report Review:** Interactive Gemini AI feedback assistant on `/review` with live readiness status badges, strengths, and actionable improvements.
 
 ---
 

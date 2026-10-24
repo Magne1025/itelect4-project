@@ -66,6 +66,10 @@ export function Layout() {
             <NavLink to="/items" className={navLinkClass}>
               Items
             </NavLink>
+            {/* Session 11: the one page that talks to Gemini */}
+            <NavLink to="/review" className={navLinkClass}>
+              AI Review
+            </NavLink>
             {isAdmin && (
               <>
                 <NavLink to="/claims" className={navLinkClass}>
@@ -125,6 +129,9 @@ export function Layout() {
           )}
           <NavLink to="/items" className={navLinkClass}>
             Items
+          </NavLink>
+          <NavLink to="/review" className={navLinkClass}>
+            AI Review
           </NavLink>
           {isAdmin && (
             <>

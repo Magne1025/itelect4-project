@@ -7,6 +7,7 @@ import type {
   AuthReply,
   Category,
   ItemStatus,
+  AiReview,
 } from "../types/index";
 import useAuthStore from "../store/authStore";
 
@@ -154,3 +155,15 @@ export async function updateUserActiveStatus(
     isActive,
   };
 }
+
+// ===== SESSION 11: one more private call ===============================
+// ---- ai: private, like submissions. The token goes on automatically,
+// which matters more here than anywhere: without it, anyone could
+// spend your Gemini quota.
+export function askAi(prompt: string): Promise<AiReview> {
+  return request<AiReview>("/api/ai", {
+    method: "POST",
+    body: JSON.stringify({ prompt }),
+  });
+}
+
