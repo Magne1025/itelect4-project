@@ -264,14 +264,14 @@ export function ItemDetailPage() {
         </section>
       )}
 
-      {/* Claim Form */}
-      {String(item.status).toLowerCase() !== "claimed" ? (
+      {/* Claim Section / Status Notice */}
+      {String(item.status).toLowerCase() === "found" || String(item.status).toLowerCase() === "open" ? (
         <section className="glass-panel rounded-3xl p-6 md:p-8 border-l-4 border-l-purple-500/80">
           <h2 className="text-xl font-bold font-heading text-slate-900 dark:text-white mb-2">
             Submit a Claim
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-            Believe this item is yours? Fill out the details below to verify ownership.
+            Believe this found item is yours? Fill out the details below to verify your ownership.
           </p>
 
           {currentUser ? (
@@ -345,6 +345,20 @@ export function ItemDetailPage() {
               </button>
             </div>
           )}
+        </section>
+      ) : String(item.status).toLowerCase() === "lost" ? (
+        <section className="glass-panel rounded-3xl p-6 md:p-8 border-l-4 border-l-amber-500/80 bg-amber-50/30 dark:bg-amber-950/10">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">🔍</span>
+            <div className="space-y-1">
+              <h2 className="text-lg font-bold font-heading text-slate-900 dark:text-white">
+                This item is reported as Lost
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                This item hasn't been found yet. If you have found it, please turn it over to the campus lost &amp; found office or contact the reporter directly using their details above.
+              </p>
+            </div>
+          </div>
         </section>
       ) : (
         <div className="glass-panel rounded-3xl p-6 text-center text-slate-500 dark:text-slate-400 text-sm">
