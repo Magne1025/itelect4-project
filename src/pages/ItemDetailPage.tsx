@@ -167,6 +167,44 @@ export function ItemDetailPage() {
                 Item #{item.id}
               </p>
             </div>
+
+            {/* Admin or Reporter Status Controls */}
+            {(currentUser?.role === "admin" || (currentUser && String(currentUser.id) === String(item.reporterId))) && (
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 p-2.5 rounded-2xl bg-slate-100/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-white/[0.08]">
+                <span className="text-xs font-semibold px-2 text-slate-500 dark:text-slate-400">
+                  {currentUser?.role === "admin" ? "🛡️ Admin Controls:" : "✏️ My Post:"}
+                </span>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {String(item.status).toLowerCase() !== "found" && (
+                    <button
+                      onClick={() => statusMutation.mutate("found" as any)}
+                      disabled={statusMutation.isPending}
+                      className="px-3 py-1.5 text-xs font-bold rounded-xl text-emerald-700 dark:text-emerald-300 bg-emerald-100/80 hover:bg-emerald-200 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-700/50 transition-all active:scale-95 disabled:opacity-50"
+                    >
+                      ✓ Mark as Found
+                    </button>
+                  )}
+                  {String(item.status).toLowerCase() !== "lost" && (
+                    <button
+                      onClick={() => statusMutation.mutate("lost" as any)}
+                      disabled={statusMutation.isPending}
+                      className="px-3 py-1.5 text-xs font-bold rounded-xl text-blue-700 dark:text-blue-300 bg-blue-100/80 hover:bg-blue-200 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 border border-blue-300 dark:border-blue-700/50 transition-all active:scale-95 disabled:opacity-50"
+                    >
+                      🔍 Mark as Lost
+                    </button>
+                  )}
+                  {String(item.status).toLowerCase() !== "claimed" && (
+                    <button
+                      onClick={() => statusMutation.mutate("claimed" as any)}
+                      disabled={statusMutation.isPending}
+                      className="px-3 py-1.5 text-xs font-bold rounded-xl text-amber-700 dark:text-amber-300 bg-amber-100/80 hover:bg-amber-200 dark:bg-amber-950/60 dark:hover:bg-amber-900/60 border border-amber-300 dark:border-amber-700/50 transition-all active:scale-95 disabled:opacity-50"
+                    >
+                      🔒 Mark as Claimed
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
