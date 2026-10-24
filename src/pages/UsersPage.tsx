@@ -18,7 +18,7 @@ export function UsersPage() {
   });
 
   const toggleMutation = useMutation({
-    mutationFn: ({ id, isActive }: { id: number; isActive: boolean }) =>
+    mutationFn: ({ id, isActive }: { id: string | number; isActive: boolean }) =>
       updateUserActiveStatus(id, isActive),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -26,10 +26,9 @@ export function UsersPage() {
   });
 
   const toggleUserActive = (userId: string | number) => {
-    const id = Number(userId);
     const user = users.find((u) => String(u.id) === String(userId));
     if (user) {
-      toggleMutation.mutate({ id, isActive: !user.isActive });
+      toggleMutation.mutate({ id: user.id, isActive: !user.isActive });
     }
   };
 

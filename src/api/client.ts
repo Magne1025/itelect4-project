@@ -112,10 +112,19 @@ export function deleteItem(id: string | number): Promise<void> {
   });
 }
 
-// Legacy user/claim helpers kept for backward compatibility if any component calls them
-export async function getUsers(): Promise<ApiUser[]> {
-  const currentUser = useAuthStore.getState().user;
-  return currentUser ? [currentUser] : [];
+// User management helpers
+export function getUsers(): Promise<ApiUser[]> {
+  return request<ApiUser[]>("/api/users");
+}
+
+export function updateUserActiveStatus(
+  id: number | string,
+  isActive: boolean,
+): Promise<ApiUser> {
+  return request<ApiUser>(`/api/users/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ isActive }),
+  });
 }
 
 export async function getClaims(): Promise<ApiClaim[]> {
@@ -140,19 +149,6 @@ export async function updateClaimStatus(
     status: status as any,
     createdAt: new Date().toISOString(),
     reviewedAt,
-  };
-}
-
-export async function updateUserActiveStatus(
-  id: number | string,
-  isActive: boolean,
-): Promise<ApiUser> {
-  return {
-    id: String(id),
-    name: "User",
-    email: "",
-    role: "student" as any,
-    isActive,
   };
 }
 

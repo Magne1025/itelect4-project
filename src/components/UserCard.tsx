@@ -1,5 +1,4 @@
 import React from "react";
-import { UserRole } from "../types/index";
 import type { User } from "../types/index";
 
 export interface UserCardProps {
@@ -18,13 +17,15 @@ export const UserCard: React.FC<UserCardProps> = ({
     onToggleActive(user.id);
   };
 
-  const getRoleBadgeClasses = (role: UserRole) => {
-    switch (role) {
-      case UserRole.Admin:
+  const getRoleBadgeClasses = (role: string) => {
+    switch (String(role).toLowerCase()) {
+      case "admin":
         return "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20";
-      case UserRole.Finder:
+      case "student":
+      case "claimer":
         return "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20";
-      case UserRole.Claimer:
+      case "instructor":
+      case "finder":
         return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20";
       default:
         return "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20";
