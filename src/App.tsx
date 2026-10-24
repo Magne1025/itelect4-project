@@ -10,6 +10,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ReportItemPage } from "./pages/ReportItemPage";
+import { ReviewPage } from "./pages/ReviewPage";
 import { UserRole } from "./types/index";
 
 /**
@@ -29,6 +30,9 @@ function App() {
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="items/new" element={<ReportItemPage />} />
+          {/* Session 11: behind the same guard -- the API refuses it
+              without a token anyway, so the page should not offer it. */}
+          <Route path="review" element={<ReviewPage />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={[UserRole.Admin]} />}>
