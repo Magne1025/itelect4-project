@@ -15,14 +15,14 @@ jobs:
       # Copies this repo, at the commit that was pushed, onto the machine.
       - uses: actions/checkout@v4
 
-      # Installs Node 24 and keeps npm's download cache between runs.
+      # Installs Node 22 (LTS) and keeps npm's download cache between runs.
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: npm
 
       # Installs packages cleanly.
-      - run: npm install
+      - run: npm install --legacy-peer-deps
 
       # oxlint, the linter Vite's template set up. Warnings print but
       # do not fail the run; errors do.
