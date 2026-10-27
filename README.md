@@ -1,6 +1,22 @@
 # Campus Lost & Found — Frontend (ITELECT4)
 
+[![CI](https://github.com/Magne1025/itelect4-project/actions/workflows/ci.yml/badge.svg)](https://github.com/Magne1025/itelect4-project/actions/workflows/ci.yml)
+
 A responsive, professional React and TypeScript web application for a University Lost & Found Campus Information System. Finders post cataloged items, owners submit verification claims, and administrators review submissions and users.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  fe["itelect4-project<br/>React + Vite on Vercel"]
+  be["itelect4-backend<br/>Express on Vercel"]
+  db[("MongoDB Atlas")]
+  ai["Gemini API"]
+  fe -- "fetch + Bearer token" --> be
+  be -- "Mongoose" --> db
+  be -- "GEMINI_API_KEY" --> ai
+```
+
 
 ## 🚀 Live Deployments
 
@@ -74,3 +90,14 @@ Build for production:
 ```bash
 npm run build
 ```
+
+Run test suite:
+```bash
+npm test
+```
+
+---
+
+## 🤖 AI-Use Disclosure
+AI coding assistants were utilized during the development of this project for pair programming, code scaffolding, automated testing setup (Vitest and React Testing Library), CI workflow configuration, and code quality linting assistance. All generated code and tests have been reviewed, verified, and validated.
+
