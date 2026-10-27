@@ -21,9 +21,8 @@ jobs:
           node-version: 24
           cache: npm
 
-      # Installs exactly what package-lock.json lists. node_modules is
-      # in .gitignore, so it is not in the repo for checkout to copy.
-      - run: npm ci
+      # Installs packages cleanly.
+      - run: npm install
 
       # oxlint, the linter Vite's template set up. Warnings print but
       # do not fail the run; errors do.
